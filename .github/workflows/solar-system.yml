@@ -37,6 +37,7 @@ jobs:
             path: test-results.xml
     code-covergae:
         name: Code Coverage
+        id: code-coverage
         runs-on: ubuntu-latest
         steps:
           - name: Checkout Repository
