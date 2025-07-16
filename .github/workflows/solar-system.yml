@@ -35,10 +35,10 @@ jobs:
           with:
             name: Mocha-Test-Result
             path: test-results.xml
-    code-covergae:
+    code-coverage:
         name: Code Coverage
-        id: code-coverage
         runs-on: ubuntu-latest
+        id: code-coverage
         steps:
           - name: Checkout Repository
             uses: actions/checkout@v4
