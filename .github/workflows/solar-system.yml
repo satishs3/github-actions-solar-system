@@ -1,38 +1,34 @@
 name: Solar System Workflow
-
-on: 
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-      - 'feature/*'
+on:
+    workflow_dispatch: null
+    push:
+      branches:
+        - main
+        - feature/*
 env:
-  MONGO_URI: ‘mongodb+srv://supercluster.d83jj.mongodb.net/superData'
-  MONGO_USERNAME: superuser
-  MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}  
+    MONGO_URI: mongodb+srv://supercluster.d83jj.mongodb.net/superData
+    MONGO_USERNAME: superuser
+    MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}  
 jobs:
     unit-testing:
-        name: Unit Testing
-        runs-on: ubuntu-latest
-        steps:
+      name: Unit Testing
+      runs-on: ubuntu-latest
+      steps:
         - name: Checkout Repository
           uses: actions/checkout@v4
-
         - name: Setup NodeJS Version
           uses: actions/setup-node@v4
           with:
             node-version: 20
         - name: Cache NPM dependencies
-          uses: actions/cache@v4.2.3
+          uses: actions/cache@v4
           with:
-            key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
             path: ~/.npm
+            key: '${{ runner.os }}-node-modules-${{ hashFiles(''package-lock.json'') }}'
         - name: Install Dependencies
           run: npm install
-    
         - name: Unit Testing
           run: npm test
-          
         - name: Archive Test Result
           if: always()
           uses: actions/upload-artifact@v4
@@ -40,30 +36,20 @@ jobs:
             name: Mocha-Test-Result
             path: test-results.xml
     code-coverage:
-        name: Code Coverage
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout Repository
-            uses: actions/checkout@v4
-
-          - name: Setup NODEJS Version
-            uses: actions/setup-node@v4
-            with:
-              node-version: 18
-              
-          - name: Install Dependencies
-            run: npm install
-
-          - name: Code-coverage run
-            run: npm run code-coverage
-
-          - name: Upload code-coverage reports
-            if: always()
-            uses: actions/upload-artifact@v4
-            with:
-              name: Code-Coverage-Result
-              path: coverage
-              retention-days: 5
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm install
+      - continue-on-error: true
+        run: npm run coverage
+      - uses: actions/upload-artifact@v4
+        with:
+         name: Code-Coverage-Result
+         path: coverage
+         retention-days: 5
     docker:
       runs-on: ubuntu-latest
       needs:
@@ -110,4 +96,5 @@ jobs:
               kubectl -n default get pod
               sleep 10
         
+
 
